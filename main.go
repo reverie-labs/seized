@@ -10,14 +10,12 @@ import (
 
 func seizedHandler(w http.ResponseWriter, r *http.Request) {
 	// parse the number out of the path
-	ans := r.URL.Path[1:]
+	// ans := r.URL.Path[1:]
+	ans := "451"
 	ans_i, _ := strconv.Atoi(ans)
 
 	// read based on the number, rudimentary traversal protection
-	// file, _ := os.Open("static/" + strconv.Itoa(ans_i) + ".html")
-
-	// read the hardcoded file
-	file, _ := os.Open("static/451.html")
+	file, _ := os.Open("static/" + strconv.Itoa(ans_i) + ".html")
 
 	// write the error code
 	w.WriteHeader(ans_i)
