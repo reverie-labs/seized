@@ -4,21 +4,44 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"path"
 	"strconv"
 	"time"
 )
 
 func seizedHandler(w http.ResponseWriter, r *http.Request) {
-	// parse the number out of the path
-	// ans := r.URL.Path[1:]
-	ans := "451"
-	ans_i, _ := strconv.Atoi(ans)
+	// parse to see if we've got an env var
+	hardcoded_error := os.Getenv("SEIZED_HARDCODED_ERROR")
 
-	// read based on the number, rudimentary traversal protection
-	file, _ := os.Open("static/" + strconv.Itoa(ans_i) + ".html")
+	ans := ""
+	if hardcoded_error != "" {
+		// if we have a hardcoded error, use it
+		ans = hardcoded_error
+	} else {
+		// otherwise, use whatever we got on the request
+		ans = r.URL.Path[1:]
+	}
 
-	// write the error code
+	// make an integer out of it
+	ans_i, err := strconv.Atoi(ans)
+
+	if err != nil {
+		// if that didn't properly look like an integer, then 500 looks good enough
+		ans_i = 500
+	}
+
+	// send the error code out immediately
 	w.WriteHeader(ans_i)
+
+	// read based on the integer not the string, rudimentary traversal protection
+	fp := path.Join("static", strconv.Itoa(ans_i)+".html")
+	file, err := os.Open(fp)
+
+	// if that didn't work, then read the 500 error code
+	if err != nil {
+		// by this point it's too late to change the returned code, but I'm calling this a feature
+		file, _ = os.Open("static/500.html")
+	}
 
 	// return the data
 	http.ServeContent(w, r, "", time.Time{}, file)
