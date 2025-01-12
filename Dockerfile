@@ -17,6 +17,9 @@ FROM ghcr.io/tarampampam/error-pages:latest AS error-pages
 # actual image
 FROM scratch
 
+LABEL org.opencontainers.image.source="https://github.com/reverie-labs/seized"
+LABEL org.opencontainers.image.authors="sannemen@users.noreply.github.com"
+
 # copy the binary from the builder
 COPY --from=builder /src/seized /bin/seized
 # copy all the error pages from the tarampampam's image
