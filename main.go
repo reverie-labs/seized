@@ -28,6 +28,9 @@ func main() {
 	log.Print("seized listening on :4000...")
 
 	http.HandleFunc(`/`, seizedHandler)
+	http.HandleFunc(`/favicon.ico`, func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "static/favicon.ico")
+	})
 	err := http.ListenAndServe(":4000", nil)
 	if err != nil {
 		// log.Fatal(err)
